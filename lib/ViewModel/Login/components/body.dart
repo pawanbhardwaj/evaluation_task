@@ -113,7 +113,7 @@ class _BodyState extends State<Body> {
                               )),
                           hintText: "Enter Number",
                         ),
-                        initialCountryCode: 'IN',
+                        initialCountryCode: 'US',
                         onChanged: (phone) {
                           setState(() {
                             phoneNumber = phone.completeNumber;
