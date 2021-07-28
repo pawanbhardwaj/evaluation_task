@@ -12,8 +12,8 @@ import '../constants.dart';
 
 class LoginController {
   // login via mobile number and OTP
-  Future loginUserViaMobile(TextEditingController _phoneController,
-      TextEditingController _otpController, BuildContext context) async {
+  Future loginUserViaMobile(String phone, TextEditingController _otpController,
+      BuildContext context) async {
     showDialog(
         context: (context),
         builder: (BuildContext context) => Container(
@@ -27,7 +27,7 @@ class LoginController {
     FirebaseAuth _auth = FirebaseAuth.instance;
 
     _auth.verifyPhoneNumber(
-      phoneNumber: "+91" + _phoneController.text,
+      phoneNumber: phone,
       timeout: Duration(seconds: 60),
       verificationCompleted: (AuthCredential credential) async {
         UserCredential result = await _auth.signInWithCredential(credential);
@@ -35,14 +35,13 @@ class LoginController {
         User? user = result.user;
 
         if (user != null) {
-          _phoneController.clear();
           _otpController.text = "OTP verified successfully";
 
           userid = user.uid;
           userName = "Guest";
           await SharedPreferenceHelper.setUserName(userName!);
           await SharedPreferenceHelper.setUserId(userid!);
-          print(SharedPreferenceHelper.getUserId());
+
           await NavigationService.instance
               .navigateToPushAndRemoveUntilRoute("/home");
         } else {
@@ -102,7 +101,7 @@ class LoginController {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Enter the OTP sent to ${_phoneController.text}",
+                                    "Enter the OTP sent to $phone",
                                     style: TextStyle(
                                       color: Color(0xffb2aeae),
                                       fontSize: 12,
@@ -151,7 +150,6 @@ class LoginController {
                                                       "/home");
                                             });
 
-                                            _phoneController.clear();
                                             _otpController.clear();
                                           } catch (e) {
                                             Fluttertoast.showToast(
@@ -181,7 +179,7 @@ class LoginController {
       },
       codeAutoRetrievalTimeout: (String verificationId) {
         Fluttertoast.showToast(msg: "Time out");
-        NavigationService.instance.goback();
+        // NavigationService.instance.goback();
       },
     );
   }

@@ -9,6 +9,7 @@ import 'package:evaluation_task/components/rounded_password_field.dart';
 import 'package:evaluation_task/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'background.dart';
 
 class Body extends StatefulWidget {
@@ -23,6 +24,7 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   final _phoneController = TextEditingController();
   final _otpController = TextEditingController();
+  String phoneNumber = '';
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -78,26 +80,28 @@ class _BodyState extends State<Body> {
                     padding: EdgeInsets.only(left: 11),
                     child: Form(
                       key: _formKey,
-                      child: TextFormField(
+                      child: IntlPhoneField(
                         keyboardType: TextInputType.phone,
                         controller: _phoneController,
                         validator: (val) {
-                          if (val == '' || val == null || val.length < 10)
+                          if (val == '' || val == null)
                             return 'Please enter valid phone number';
                           else
                             return null;
                         },
-                        maxLength: 10,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           counterText: "",
+                          hintStyle: TextStyle(
+                              color: Colors.black.withOpacity(0.7),
+                              fontFamily: "AlteHaasGrotes"),
                           suffixIcon: IconButton(
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
                                   LoginController loginController =
                                       LoginController();
                                   loginController.loginUserViaMobile(
-                                    _phoneController,
+                                    phoneNumber,
                                     _otpController,
                                     context,
                                   );
@@ -107,11 +111,15 @@ class _BodyState extends State<Body> {
                                 Icons.arrow_forward_ios,
                                 size: 21,
                               )),
-                          hintStyle: TextStyle(
-                              color: Colors.black.withOpacity(0.5),
-                              fontFamily: "AlteHaasGrotes"),
                           hintText: "Enter Number",
                         ),
+                        initialCountryCode: 'IN',
+                        onChanged: (phone) {
+                          setState(() {
+                            phoneNumber = phone.completeNumber;
+                            print(phoneNumber);
+                          });
+                        },
                       ),
                     ),
                   )),
